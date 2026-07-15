@@ -320,6 +320,9 @@ tbody tr:hover .td-prog.inactive, tbody tr:hover .td-prog.holi-cell { background
     <div class="stat"><div class="num c-full"  id="st-full">0</div><div class="lbl">4개 전부<br>완료</div></div>
     <div class="vdiv"></div>
     <div class="stat"><div class="num" id="st-pending" style="color:#dc2626;">0</div><div class="lbl">예약<br>미정</div></div>
+    <div class="vdiv"></div>
+    <div class="stat"><div class="num" id="st-reg" style="color:#059669;">0</div><div class="lbl">등록<br>완료</div></div>
+    <div class="stat"><div class="num" id="st-regrate" style="color:#059669;">0%</div><div class="lbl">등록률</div></div>
   </div>
 
   <!-- Grid -->
@@ -795,6 +798,15 @@ function renderStats() {
     Object.values(m.times).forEach(v => { if (v && v.status === 'pending') pendingCnt++; });
   });
   document.getElementById('st-pending').textContent = pendingCnt;
+  const fullCnt = vm.filter(m =>
+    Object.entries(m.times).filter(([d, v]) => v && v.status === 'confirmed' && d <= TODAY).length >= 4
+  ).length;
+  const regCnt = vm.filter(m =>
+    Object.entries(m.times).filter(([d, v]) => v && v.status === 'confirmed' && d <= TODAY).length >= 4 && m.registered
+  ).length;
+  const regRate = fullCnt > 0 ? Math.round(regCnt / fullCnt * 100) : 0;
+  document.getElementById('st-reg').textContent = regCnt;
+  document.getElementById('st-regrate').textContent = regRate + '%';
 }
 
 function renderTable() {
