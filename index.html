@@ -782,12 +782,22 @@ function renderStats() {
     const active = getActiveDates(m.startDate, m.extraDays);
     return [...active].some(d => monthDates.has(d));
   });
+  const progMap = {};
+  SCHED.forEach(s => { progMap[s.d] = s.prog; });
+  const confirmedProgKeys = m => new Set(
+    Object.entries(m.times)
+      .filter(([d, v]) => v && v.status === 'confirmed' && d <= TODAY)
+      .map(([d]) => PROG_DEF[progMap[d]]?.key)
+      .filter(Boolean)
+  );
   document.getElementById('st-total').textContent  = vm.length;
-  document.getElementById('st-tone').textContent   = vm.filter(m => m.done.has('tone')).length;
-  document.getElementById('st-align').textContent  = vm.filter(m => m.done.has('align')).length;
-  document.getElementById('st-core').textContent   = vm.filter(m => m.done.has('core')).length;
-  document.getElementById('st-cardio').textContent = vm.filter(m => m.done.has('cardio')).length;
-  document.getElementById('st-full').textContent   = vm.filter(m => m.done.size >= 4).length;
+  document.getElementById('st-tone').textContent   = vm.filter(m => confirmedProgKeys(m).has('tone')).length;
+  document.getElementById('st-align').textContent  = vm.filter(m => confirmedProgKeys(m).has('align')).length;
+  document.getElementById('st-core').textContent   = vm.filter(m => confirmedProgKeys(m).has('core')).length;
+  document.getElementById('st-cardio').textContent = vm.filter(m => confirmedProgKeys(m).has('cardio')).length;
+  document.getElementById('st-full').textContent   = vm.filter(m =>
+    Object.entries(m.times).filter(([d, v]) => v && v.status === 'confirmed' && d <= TODAY).length >= 4
+  ).length;
   const todayCnt = vm.filter(m => {
     const act = getActiveDates(m.startDate, m.extraDays);
     return act.has(TODAY) && m.times[TODAY] && m.times[TODAY].time;
