@@ -113,6 +113,9 @@ thead tr:nth-child(2) th { top: 38px; }
 }
 tbody tr:hover .td-member { background: #fafbff; }
 .m-name { font-size: 13px; font-weight: 800; }
+.sparkle-cell {
+  box-shadow: inset 0 0 0 2px #dc2626;
+}
 .m-sub  { font-size: 10px; color: #aaa; margin-top: 1px; }
 .m-memo { font-size: 10px; color: #6b7280; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
 .extendable { background: repeating-linear-gradient(45deg,#fff7ed,#fff7ed 4px,#fed7aa 4px,#fed7aa 8px) !important; cursor: pointer; }
@@ -877,6 +880,11 @@ function renderTable() {
         style="background:${p.color}22;color:${p.color};">${p.label}</span>`
     ).join('');
 
+    const confirmedDatesSorted = Object.entries(m.times)
+      .filter(([d, v]) => v && v.status === 'confirmed')
+      .map(([d]) => d).sort();
+    const justCompleted = confirmedDatesSorted.length >= 4 && confirmedDatesSorted[3] === TODAY;
+
     const rowNum = members.indexOf(m) + 1;
     html += `<tr style="${m.cancelled ? 'background:#fff5f5;opacity:0.7;' : ''}">`;
     html += `<td style="position:sticky;left:0;z-index:10;background:#f8f9fa;border-right:1px solid #e5e7eb;border-bottom:1px solid #eee;text-align:center;font-size:12px;font-weight:800;color:#aaa;padding:0 4px;width:32px;min-width:32px;">${rowNum}</td>`;
@@ -894,7 +902,7 @@ function renderTable() {
     }
     const nameIcon = m.unregistered ? '🔴 ' : m.registered ? '🔵 ' : m.referral ? '🟢 ' : '';
     const cancelStyle = m.cancelled ? 'border-left:3px solid #dc2626;' : '';
-    html += `<td class="td-member" style="left:32px;${cellBg?`background:${cellBg};`:''}${cancelStyle}" oncontextmenu="openCtxMenu(event,${m.id})">
+    html += `<td class="td-member ${justCompleted?'sparkle-cell':''}" style="left:32px;${cellBg?`background:${cellBg};`:''}${cancelStyle}" oncontextmenu="openCtxMenu(event,${m.id})">
       <div class="m-name" style="${nameColor?`color:${nameColor};font-weight:800;`:''}${m.cancelled?'text-decoration:line-through;color:#dc2626;':''}">${nameIcon}${m.name}${badge}${m.cancelled?'<span style="font-size:10px;background:#dc2626;color:#fff;border-radius:4px;padding:1px 5px;margin-left:4px;">취소</span>':''}</div>
       <div class="m-sub">${m.startDate.slice(5).replace('-','/')} 시작</div>
       ${m.memo ? `<div class="m-memo">📝 ${m.memo}</div>` : ''}
