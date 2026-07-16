@@ -777,11 +777,7 @@ function renderAll() {
 }
 
 function renderStats() {
-  const monthDates = new Set(WORK_DATES);
-  const vm = members.filter(m => {
-    const active = getActiveDates(m.startDate, m.extraDays);
-    return [...active].some(d => monthDates.has(d));
-  });
+  const vm = members.filter(m => m.startDate.slice(5,7) === currentMonth);
   const progMap = {};
   SCHED.forEach(s => { progMap[s.d] = s.prog; });
   const confirmedProgKeys = m => new Set(
