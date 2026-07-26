@@ -688,7 +688,7 @@ async function ctxEditStartDate() {
   sel.innerHTML = WORK_DATES.map(d => {
     const day = parseInt(d.slice(8));
     const s = DATE_MAP[d];
-    return `<option value="${d}" ${d === m.startDate ? 'selected' : ''}>7월 ${day}일 (${DOW_KO[s.dow]})</option>`;
+    return `<option value="${d}" ${d === m.startDate ? 'selected' : ''}>${parseInt(currentMonth)}월 ${day}일 (${DOW_KO[s.dow]})</option>`;
   }).join('');
   document.getElementById('changeDateModal').dataset.memberId = m.id;
   document.getElementById('changeDateModal').classList.add('open');
@@ -995,7 +995,7 @@ function openAddModal() {
   sel.innerHTML = WORK_DATES.map(d => {
     const day = parseInt(d.slice(8));
     const s = DATE_MAP[d];
-    return `<option value="${d}">7월 ${day}일 (${DOW_KO[s.dow]})</option>`;
+    return `<option value="${d}">${parseInt(currentMonth)}월 ${day}일 (${DOW_KO[s.dow]})</option>`;
   }).join('');
   document.getElementById('addModal').classList.add('open');
 }
