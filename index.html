@@ -885,7 +885,7 @@ function renderTable() {
       .map(([d]) => d).sort();
     const justCompleted = confirmedDatesSorted.length >= 4 && confirmedDatesSorted[3] === TODAY;
 
-    const rowNum = members.indexOf(m) + 1;
+    const rowNum = visibleMembers.indexOf(m) + 1;
     html += `<tr style="${m.cancelled ? 'background:#fff5f5;opacity:0.7;' : ''}">`;
     html += `<td style="position:sticky;left:0;z-index:10;background:#f8f9fa;border-right:1px solid #e5e7eb;border-bottom:1px solid #eee;text-align:center;font-size:12px;font-weight:800;color:#aaa;padding:0 4px;width:32px;min-width:32px;">${rowNum}</td>`;
     let cellBg, nameColor, badge;
