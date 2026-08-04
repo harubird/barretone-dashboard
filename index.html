@@ -1025,7 +1025,7 @@ document.addEventListener('keydown', e => {
 const d = new Date(TODAY);
 const days = ['일','월','화','수','목','금','토'];
 document.getElementById('todayLabel').textContent =
-  `오늘: 7월 ${d.getDate()}일 (${days[d.getDay()]})`;
+  `오늘: ${d.getMonth()+1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
 
 // 월 버튼 UI 초기화
 document.getElementById('monthLabel').textContent = `${parseInt(currentMonth)}월 체험 스케줄`;
