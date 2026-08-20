@@ -296,6 +296,7 @@ tbody tr:hover .td-prog.inactive, tbody tr:hover .td-prog.holi-cell { background
       <div style="display:flex;gap:4px;">
         <button class="month-btn" data-month="07" onclick="setMonth('07')" style="padding:4px 10px;border-radius:12px;border:1.5px solid #7c4dff;background:#fff;color:#7c4dff;font-weight:700;font-size:12px;cursor:pointer;">7월</button>
         <button class="month-btn" data-month="08" onclick="setMonth('08')" style="padding:4px 10px;border-radius:12px;border:1.5px solid #7c4dff;background:#fff;color:#7c4dff;font-weight:700;font-size:12px;cursor:pointer;">8월</button>
+        <button class="month-btn" data-month="09" onclick="setMonth('09')" style="padding:4px 10px;border-radius:12px;border:1.5px solid #7c4dff;background:#fff;color:#7c4dff;font-weight:700;font-size:12px;cursor:pointer;">9월</button>
       </div>
     </div>
     <div class="prog-badges">
@@ -469,6 +470,30 @@ const SCHED_BY_MONTH = {
     { d:'2026-08-28', dow:'FRI', prog:'CORE',    wk:3 },
     { d:'2026-08-31', dow:'MON', prog:'CARDIO',  wk:4 },
   ],
+  '09': [
+    { d:'2026-09-01', dow:'TUE', prog:'TONE',    wk:0 },
+    { d:'2026-09-02', dow:'WED', prog:'CORE',    wk:0 },
+    { d:'2026-09-03', dow:'THU', prog:'ALIGN',   wk:0 },
+    { d:'2026-09-04', dow:'FRI', prog:'TONE',    wk:0 },
+    { d:'2026-09-07', dow:'MON', prog:'ALIGN',   wk:1 },
+    { d:'2026-09-08', dow:'TUE', prog:'CORE',    wk:1 },
+    { d:'2026-09-09', dow:'WED', prog:'CARDIO',  wk:1 },
+    { d:'2026-09-10', dow:'THU', prog:'TONE',    wk:1 },
+    { d:'2026-09-11', dow:'FRI', prog:'ALIGN',   wk:1 },
+    { d:'2026-09-14', dow:'MON', prog:'CORE',    wk:2 },
+    { d:'2026-09-15', dow:'TUE', prog:'TONE',    wk:2 },
+    { d:'2026-09-16', dow:'WED', prog:'ALIGN',   wk:2 },
+    { d:'2026-09-17', dow:'THU', prog:'CARDIO',  wk:2 },
+    { d:'2026-09-18', dow:'FRI', prog:'CORE',    wk:2 },
+    { d:'2026-09-21', dow:'MON', prog:'TONE',    wk:3 },
+    { d:'2026-09-22', dow:'TUE', prog:'ALIGN',   wk:3 },
+    { d:'2026-09-23', dow:'WED', prog:'CARDIO',  wk:3 },
+    { d:'2026-09-24', dow:'THU', prog:'HOLIDAY', wk:3 },
+    { d:'2026-09-25', dow:'FRI', prog:'HOLIDAY', wk:3 },
+    { d:'2026-09-28', dow:'MON', prog:'CORE',    wk:4 },
+    { d:'2026-09-29', dow:'TUE', prog:'CARDIO',  wk:4 },
+    { d:'2026-09-30', dow:'WED', prog:'TONE',    wk:4 },
+  ],
 };
 
 const TODAY = new Date().toLocaleDateString('sv-SE');
@@ -543,6 +568,7 @@ db.channel('realtime-changes')
 const ALL_WORK_DATES_GLOBAL = [
   ...SCHED_BY_MONTH['07'].filter(s => s.prog !== 'HOLIDAY').map(s => s.d),
   ...SCHED_BY_MONTH['08'].filter(s => s.prog !== 'HOLIDAY').map(s => s.d),
+  ...SCHED_BY_MONTH['09'].filter(s => s.prog !== 'HOLIDAY').map(s => s.d),
 ].sort();
 
 // 회원의 활성 날짜 계산 (기본 8일 + 연장일, 월 경계 초과 가능)
