@@ -908,12 +908,9 @@ function renderTable() {
   visibleMembers.forEach(m => {
     const active = getActiveDates(m.startDate, m.extraDays);
 
-    // 4개 프로그램 예약 여부
-    const bookedProgs = new Set(
-      SCHED.filter(s => active.has(s.d) && m.times[s.d] && m.times[s.d].time && s.prog !== 'HOLIDAY')
-           .map(s => PROG_DEF[s.prog]?.key)
-    );
-    const allBooked = ['tone','align','core','cardio'].every(k => bookedProgs.has(k));
+    // 4회 이상 예약 여부 (컨셉 종류 무관, 예약/확정 모두 포함)
+    const bookedCount = Object.values(m.times).filter(v => v && v.time).length;
+    const allBooked = bookedCount >= 4;
 
     const progs = [
       {k:'tone', label:'T', color:'var(--tone)'},
