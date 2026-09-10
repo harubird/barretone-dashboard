@@ -139,7 +139,6 @@ tbody tr:hover .td-member { background: #fafbff; }
 }
 .td-prog.inactive  { background: #fafafa; cursor: default; }
 .td-prog.holi-cell { background: repeating-linear-gradient(45deg,#f9f9f9,#f9f9f9 4px,#efefef 4px,#efefef 8px); cursor: default; }
-.td-prog.free-cell { background:#fafafa; color:#bbb; font-size:10px; font-weight:800; letter-spacing:0.5px; cursor: default; }
 tbody tr:hover td { background-color: rgba(79,142,247,0.03); }
 tbody tr:hover .td-prog.inactive, tbody tr:hover .td-prog.holi-cell { background-color: inherit; }
 .td-prog.col-today-bg { background: rgba(37,99,235,0.04) !important; }
@@ -161,6 +160,7 @@ tbody tr:hover .td-prog.inactive, tbody tr:hover .td-prog.holi-cell { background
 .ci-align  { background: var(--align-bg); }  .ci-align  .cell-pname { color: var(--align); }
 .ci-core   { background: var(--core-bg); }   .ci-core   .cell-pname { color: var(--core); }
 .ci-cardio { background: var(--cardio-bg); } .ci-cardio .cell-pname { color: var(--cardio); }
+.ci-free   { background: #f1f0ee; } .ci-free   .cell-pname { color: #78716c; }
 
 /* Summary row */
 .td-summary {
@@ -411,6 +411,7 @@ const PROG_DEF = {
   ALIGN:  { key:'align',  label:'Align',         cls:'ci-align',  color:'#e53935', bg:'#fce8e8' },
   CORE:   { key:'core',   label:'CORE & BOOTY',  cls:'ci-core',   color:'#0097d6', bg:'#e0f4ff' },
   CARDIO: { key:'cardio', label:'CARDIO',        cls:'ci-cardio', color:'#2e7d32', bg:'#e6f4ea' },
+  FREE:   { key:'free',   label:'FREE',          cls:'ci-free',   color:'#78716c', bg:'#f1f0ee' },
 };
 const DOW_KO = { MON:'월', TUE:'화', WED:'수', THU:'목', FRI:'금', SAT:'토' };
 const WEEKS = [
@@ -540,7 +541,9 @@ WORK_DATES = ALL_DATES.filter(d => DATE_MAP[d].prog !== 'HOLIDAY');
 // 요일별 시간표: 월수금 / 화목
 const TIMES_MWF = ['09:00','10:00','11:00','19:00','20:00','21:00'];
 const TIMES_TTh = ['09:30','10:30','11:30','18:30','19:30','20:30'];
+const TIMES_SAT = ['09:30','10:30'];
 function getTimesForDow(dow) {
+  if (dow === 'SAT') return TIMES_SAT;
   return (dow === 'TUE' || dow === 'THU') ? TIMES_TTh : TIMES_MWF;
 }
 
@@ -955,14 +958,11 @@ function renderTable() {
     SCHED.forEach(s => {
       const isHoliday = s.prog === 'HOLIDAY';
       const isFree    = s.prog === 'FREE';
-      const isActive  = active.has(s.d);
+      const isActive  = active.has(s.d) || isFree;
       const isToday   = s.d === TODAY;
 
       if (isHoliday) {
         html += `<td class="td-prog holi-cell"></td>`; return;
-      }
-      if (isFree) {
-        html += `<td class="td-prog free-cell ${isToday?'col-today-bg':''}">FREE</td>`; return;
       }
       if (!isActive) {
         // 활성 기간 바로 다음 날이면 연장 가능 셀로 표시
@@ -1014,11 +1014,13 @@ function renderTable() {
   html += `<td style="position:sticky;left:0;z-index:10;background:#f5f5f7;border-right:1px solid #e5e7eb;width:32px;min-width:32px;"></td>`;
   html += `<td class="td-summary-label" style="left:32px;">방문 인원</td>`;
   SCHED.forEach(s => {
-    if (s.prog === 'HOLIDAY' || s.prog === 'FREE') { html += `<td class="td-summary">—</td>`; return; }
+    if (s.prog === 'HOLIDAY') { html += `<td class="td-summary">—</td>`; return; }
     let confirmed = 0, pending = 0;
     members.forEach(m => {
-      const act = getActiveDates(m.startDate, m.extraDays);
-      if (!act.has(s.d)) return;
+      if (s.prog !== 'FREE') {
+        const act = getActiveDates(m.startDate, m.extraDays);
+        if (!act.has(s.d)) return;
+      }
       const entry = m.times[s.d];
       if (!entry) return;
       if (entry.status === 'pending') pending++;
