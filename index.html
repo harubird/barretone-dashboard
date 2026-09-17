@@ -362,6 +362,7 @@ tbody tr:hover .td-prog.inactive, tbody tr:hover .td-prog.holi-cell { background
   <div class="ctx-item" id="ctxMemo" onclick="ctxEditMemo()"></div>
   <div class="ctx-item" id="ctxCancel" onclick="ctxToggleCancel()" style="color:#dc2626;"></div>
   <div class="ctx-item" id="ctxUnreg" onclick="ctxToggleUnreg()" style="color:#dc2626;"></div>
+  <div class="ctx-item" id="ctxUndecided" onclick="ctxToggleUndecided()" style="color:#ea580c;"></div>
   <div class="ctx-item" id="ctxChangeDate" onclick="ctxEditStartDate()"></div>
   <div class="ctx-item" id="ctxChangeName" onclick="ctxEditName()"></div>
   <div class="ctx-item danger" onclick="ctxDeleteMember()">회원 삭제</div>
@@ -564,6 +565,7 @@ async function loadData() {
     registered: m.registered || false,
     cancelled: m.cancelled || false,
     unregistered: m.unregistered || false,
+    undecided: m.undecided || false,
     extraDays: m.extra_days || 0,
     memo: m.memo || '',
     times: {}
@@ -684,6 +686,7 @@ function openCtxMenu(e, memberId) {
   document.getElementById('ctxMemo').textContent = m.memo ? '📝 메모 수정' : '📝 메모 추가';
   document.getElementById('ctxCancel').textContent = m.cancelled ? '↩️ 취소 복구' : '🚫 체험 취소';
   document.getElementById('ctxUnreg').textContent = m.unregistered ? '↩️ 미등록 해제' : '🔴 미등록';
+  document.getElementById('ctxUndecided').textContent = m.undecided ? '↩️ 고민중 해제' : '🟠 고민중(연락 예정)';
   document.getElementById('ctxChangeDate').textContent = '📅 시작일 변경';
   document.getElementById('ctxChangeName').textContent = '✏️ 이름 수정';
   const ctx = document.getElementById('ctxMenu');
@@ -763,6 +766,15 @@ async function ctxToggleUnreg() {
   const { error } = await db.from('members').update({ unregistered: newVal }).eq('id', m.id);
   if (error) { alert('저장 실패: ' + error.message); return; }
   m.unregistered = newVal;
+  renderAll();
+}
+async function ctxToggleUndecided() {
+  const m = members.find(x => x.id === ctxMemberId);
+  const newVal = !m.undecided;
+  closeCtxMenu();
+  const { error } = await db.from('members').update({ undecided: newVal }).eq('id', m.id);
+  if (error) { alert('저장 실패: ' + error.message); return; }
+  m.undecided = newVal;
   renderAll();
 }
 async function ctxToggleCancel() {
@@ -936,6 +948,8 @@ function renderTable() {
       cellBg = '#fff1f2'; nameColor = '#dc2626'; badge = '<span style="font-size:10px;background:#dc2626;color:#fff;border-radius:4px;padding:1px 5px;margin-left:4px;">미등록</span>';
     } else if (m.registered) {
       cellBg = '#eff6ff'; nameColor = '#1d4ed8'; badge = '<span style="font-size:10px;background:#1d4ed8;color:#fff;border-radius:4px;padding:1px 5px;margin-left:4px;">등록완료</span>';
+    } else if (m.undecided) {
+      cellBg = '#fff7ed'; nameColor = '#ea580c'; badge = '<span style="font-size:10px;background:#ea580c;color:#fff;border-radius:4px;padding:1px 5px;margin-left:4px;">고민중</span>';
     } else if (allBooked) {
       cellBg = '#fefce8'; nameColor = '#92400e'; badge = '<span style="font-size:10px;background:#f59e0b;color:#fff;border-radius:4px;padding:1px 5px;margin-left:4px;">예약완료</span>';
     } else if (m.referral) {
@@ -943,7 +957,7 @@ function renderTable() {
     } else {
       cellBg = ''; nameColor = ''; badge = '';
     }
-    const nameIcon = m.unregistered ? '🔴 ' : m.registered ? '🔵 ' : m.referral ? '🟢 ' : '';
+    const nameIcon = m.unregistered ? '🔴 ' : m.registered ? '🔵 ' : m.undecided ? '🟠 ' : m.referral ? '🟢 ' : '';
     const cancelStyle = m.cancelled ? 'border-left:3px solid #dc2626;' : '';
     html += `<td class="td-member ${justCompleted?'sparkle-cell':''}" style="left:32px;${cellBg?`background:${cellBg};`:''}${cancelStyle}" oncontextmenu="openCtxMenu(event,${m.id})">
       <div class="m-name" style="${nameColor?`color:${nameColor};font-weight:800;`:''}${m.cancelled?'text-decoration:line-through;color:#dc2626;':''}">${nameIcon}${m.name}${badge}${m.cancelled?'<span style="font-size:10px;background:#dc2626;color:#fff;border-radius:4px;padding:1px 5px;margin-left:4px;">취소</span>':''}</div>
@@ -1058,7 +1072,7 @@ async function confirmAdd() {
   closeAddModal();
   const { data, error } = await db.from('members').insert({ name, phone, start_date, referral }).select().single();
   if (error) { alert('저장 실패: ' + error.message); return; }
-  members.push({ id: data.id, name, phone, startDate: start_date, referral, registered: false, cancelled: false, unregistered: false, extraDays: 0, memo: '', times: {}, done: new Set() });
+  members.push({ id: data.id, name, phone, startDate: start_date, referral, registered: false, cancelled: false, unregistered: false, undecided: false, extraDays: 0, memo: '', times: {}, done: new Set() });
   renderAll();
 }
 
